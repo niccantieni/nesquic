@@ -31,6 +31,9 @@ impl Library {
     }
 
     pub fn version(&self) -> String {
+        if self.name() == "neqo" {
+            return "0.0.0".to_string();
+        }
         built_info::INDIRECT_DEPENDENCIES
             .iter()
             .find(|(name, _)| name == &self.name())
