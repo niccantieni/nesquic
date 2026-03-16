@@ -7,8 +7,8 @@ COLOR_OFF='\033[0m' # No Color
 
 VETH_MM="veth-mm"
 VETH_METRICS="veth-metrics"
-CPU_ALL=0-39
-CPU_SYSTEM=0-7,12-39
+CPU_ALL=0-7
+CPU_SYSTEM=0-7
 
 WORKSPACE=$(dirname "$(readlink -f "$0")")/..
 BIN="${WORKSPACE}/target/release/nesquic"
@@ -58,13 +58,13 @@ function run_client {
         CMD+="mm-link ${RES_DIR}/traces/${EXP_LINK}.up ${RES_DIR}/traces/${EXP_LINK}.down -- "
     fi
 
-    CMD+="${BIN} client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu 8 --metric-cpu 9 https://${MAHIMAHI_BASE}:4433"
+    CMD+="${BIN} client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu 4 --metric-cpu 5 https://${MAHIMAHI_BASE}:4433"
 
     eval ${CMD}
 }
 
 function run_server {
-    ${BIN} server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu 10 --metric-cpu 11 &
+    ${BIN} server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu 6 --metric-cpu 7 &
 }
 
 function kill_nesquic {
