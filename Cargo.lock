@@ -1751,6 +1751,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "neqo-iut"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "quinn",
+ "quinn-proto",
+ "rustls",
+ "socket2",
+ "tokio",
+ "tracing",
+ "url",
+ "utils",
+]
+
+[[package]]
 name = "nesquic"
 version = "0.1.0"
 dependencies = [
