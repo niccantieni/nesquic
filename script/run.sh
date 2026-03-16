@@ -71,9 +71,13 @@ function kill_nesquic {
     may_fail sudo killall -s ${1:-INT} nesquic
 }
 
-function cpu_governor {
+function cpu_governor_real {
     echo -e "${COLOR_YELLOW}Set CPU governor: $1${COLOR_OFF}"
     echo $1 | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+}
+
+function cpu_governor {
+    echo cpu_governor $1
 }
 
 function teardown {
