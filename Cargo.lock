@@ -1849,8 +1849,12 @@ name = "neqo-iut"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "neqo-common",
+ "neqo-crypto",
  "neqo-transport",
+ "socket2",
  "tokio",
+ "tracing",
  "utils",
 ]
 
