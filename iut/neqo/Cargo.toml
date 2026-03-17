@@ -5,12 +5,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.102"
-bytes = "1.11.1"
-tracing = "0.1.44"
-quinn = { version = "0.11.9", features = ["rustls"] }
-quinn-proto = "0.11.14"
-rustls = { version = "0.23.37", default-features = false, features = ["ring"] }
-socket2 = "0.6.3"
+neqo-transport = { git = "https://github.com/mozilla/neqo.git", package = "neqo-transport", tag="v0.23.1" }
 tokio = { version = "1.50.0", features = ["macros", "full"] }
-url = "2.5.8"
 utils = { path = "../../utils" }
