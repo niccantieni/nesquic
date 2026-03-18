@@ -58,17 +58,17 @@ function run_client {
         CMD+="mm-link ${RES_DIR}/traces/${EXP_LINK}.up ${RES_DIR}/traces/${EXP_LINK}.down -- "
     fi
 
-    CMD+="${BIN} client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu 4 --metric-cpu 5 https://${MAHIMAHI_BASE}:4433"
+    CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu 4 --metric-cpu 5 https://${MAHIMAHI_BASE}:4433"
 
     eval ${CMD}
 }
 
 function run_server {
-    ${BIN} server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu 6 --metric-cpu 7 &
+    ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu 6 --metric-cpu 7 &
 }
 
 function kill_nesquic {
-    may_fail sudo killall -s ${1:-INT} nesquic
+    may_fail sudo pkill --signal ${1:-INT} nesquic
 }
 
 function cpu_governor_real {
@@ -94,15 +94,20 @@ function teardown {
     exit 0
 }
 
+function compile {
+    # compile IUTs in release mode
+    echo -e "${COLOR_YELLOW}Compile Nesquic${COLOR_OFF}"
+    cargo build --release --bin nesquic --features $1
+    mv -f ${BIN} ${BIN}-$1
+
+    sudo chown root:root ${BIN}-$1
+    sudo chmod u+s,o+rx ${BIN}-$1
+}
+
+
 function setup {
     kill_nesquic KILL
     may_fail sudo ip link del ${VETH_MM}
-
-    # compile IUTs in release mode
-    echo -e "${COLOR_YELLOW}Compile Nesquic${COLOR_OFF}"
-    cargo build --release --bin nesquic
-    sudo chown root:root ${BIN}
-    sudo chmod u+s,o+rx ${BIN}
 
     echo -e "${COLOR_YELLOW}Setting up firewall${COLOR_OFF}"
     sudo ufw allow from 10.0.0.0/24 to any port 9901
@@ -201,6 +206,7 @@ else
 fi
 
 for LIB in "${LIBS[@]}"; do
+    compile ${LIB}
     run_library_experiments ${LIB}
 done
 
