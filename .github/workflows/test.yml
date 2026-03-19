@@ -11,18 +11,19 @@ on:
 
 jobs:
     test:
-        name: Test [${{ matrix.rust }}, ${{ matrix.profile }}]
+        name: Test [${{ matrix.rust }}, ${{ matrix.profile }} - ${{ matrix.library }}]
         runs-on: ubuntu-24.04
         strategy:
             fail-fast: false
             matrix:
                 rust: [stable, nightly]
                 profile: [dev]
+                library: [quinn quiche neqo]
                 include:
                     - rust: stable
                       profile: release
         # Anything nightly is treated as informational-only.
-        continue-on-error: ${{ matrix.rust == 'nightly' }}
+        continue-on-error: ${{ matrix.rust == 'nightly' }} || ${{ matrix.library == 'neqo' }}
         steps:
             - name: "Set environmental variables"
               shell: bash
@@ -40,6 +41,12 @@ jobs:
                     var="${1}_$(echo ${{ matrix.rust }} | tr . _)"
                     echo "${1}=${!var}" >> ${GITHUB_ENV}
                   }
+                  # if we are trying to build neqo, we need to set some env vars
+                  if [[ "${{ matrix.library }}" == "neqo" ]]; then
+                    echo "LD_LIBRARY_PATH=static_dependencies/neqo_dependencies/dist/Release/lib" >> ${GITHUB_ENV}
+                    echo "NSS_DIR=static_dependencies/neqo_dependencies/nss" >> ${GITHUB_ENV}
+                    echo "NSS_PREBUILT=1" >> ${GITHUB_ENV}
+                  fi
 
                   tc_var RUST_BACKTRACE
                   tc_var RUSTFLAGS
@@ -52,14 +59,17 @@ jobs:
                   components: rustfmt
             - name: Install deps
               run: |
+                  echo $LD_LIBRARY_PATH $NSS_DIR $NSS_PREBUILT
                   sudo apt-get update
                   sudo apt-get install --yes --no-install-recommends clang-18 libelf-dev zlib1g-dev linux-headers-$(uname -r) libnuma-dev
                   sudo ln -s /usr/include/asm-generic /usr/include/asm
                   sudo rm -f /bin/clang && sudo ln -s /usr/bin/clang-18 /bin/clang
             - uses: Swatinem/rust-cache@v2
             - name: Build
-              run: cargo build --profile=${{ matrix.profile }} --locked --verbose --workspace
+              run: cargo build --profile=${{ matrix.profile }} --locked --verbose --bin rcgen
             - name: Generate certificate
               run: cargo rcgen
+            - name: Build nesquic for library ${{ matrix.library }}
+              run: cargo build --profile=${{ matrix.profile }} --locked --verbose --features=${{ matrix.library }} -p nesquic
             - name: Run tests
-              run: cargo test --profile=${{ matrix.profile }} --locked --verbose --workspace
+              run: cargo test --profile=${{ matrix.profile }} --locked --verbose --features=${{ matrix.library }} -p nesquic
