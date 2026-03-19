@@ -17,10 +17,10 @@ jobs:
             fail-fast: false
             matrix:
                 rust: [stable, nightly]
-                profile: [dev]
+                profile: [dev, release]
                 library: [quinn, quiche, neqo]
-                include:
-                    - rust: stable
+                exclude:
+                    - rust: nightly
                       profile: release
         # Anything nightly is treated as informational-only.
         continue-on-error: ${{ matrix.rust == 'nightly' || matrix.library == 'neqo' }}
