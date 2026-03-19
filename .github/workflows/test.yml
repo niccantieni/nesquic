@@ -43,8 +43,8 @@ jobs:
                   }
                   # if we are trying to build neqo, we need to set some env vars
                   if [[ "${{ matrix.library }}" == "neqo" ]]; then
-                    echo "LD_LIBRARY_PATH=static_dependencies/neqo_dependencies/dist/Release/lib" >> ${GITHUB_ENV}
-                    echo "NSS_DIR=static_dependencies/neqo_dependencies/nss" >> ${GITHUB_ENV}
+                    echo "LD_LIBRARY_PATH=${{ github.workspace }}/static_dependencies/neqo_dependencies/dist/Release/lib" >> ${GITHUB_ENV}
+                    echo "NSS_DIR=${{ github.workspace }}/static_dependencies/neqo_dependencies/nss" >> ${GITHUB_ENV}
                     echo "NSS_PREBUILT=1" >> ${GITHUB_ENV}
                   fi
 
@@ -59,13 +59,12 @@ jobs:
                   components: rustfmt
             - name: Install deps
               run: |
-                  echo $LD_LIBRARY_PATH $NSS_DIR $NSS_PREBUILT
                   sudo apt-get update
                   sudo apt-get install --yes --no-install-recommends clang-18 libelf-dev zlib1g-dev linux-headers-$(uname -r) libnuma-dev
                   sudo ln -s /usr/include/asm-generic /usr/include/asm
                   sudo rm -f /bin/clang && sudo ln -s /usr/bin/clang-18 /bin/clang
             - uses: Swatinem/rust-cache@v2
-            - name: Build
+            - name: Build rcgen
               run: cargo build --profile=${{ matrix.profile }} --locked --verbose --bin rcgen
             - name: Generate certificate
               run: cargo rcgen
