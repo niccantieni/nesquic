@@ -9,6 +9,7 @@ VETH_MM="veth-mm"
 VETH_METRICS="veth-metrics"
 CPU_ALL=0-7
 CPU_SYSTEM=0-7
+NUM_CPU=8
 
 WORKSPACE=$(dirname "$(readlink -f "$0")")/..
 BIN="${WORKSPACE}/target/release/nesquic"
@@ -58,13 +59,13 @@ function run_client {
         CMD+="mm-link ${RES_DIR}/traces/${EXP_LINK}.up ${RES_DIR}/traces/${EXP_LINK}.down -- "
     fi
 
-    CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu 4 --metric-cpu 5 https://${MAHIMAHI_BASE}:4433"
+    CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu $((NUM_CPU - 4)) --metric-cpu $((NUM_CPU - 3)) https://${MAHIMAHI_BASE}:4433"
 
     eval ${CMD}
 }
 
 function run_server {
-    ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu 6 --metric-cpu 7 &
+    ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) &
 }
 
 function kill_nesquic {
@@ -158,7 +159,7 @@ function config_exp_driving {
 }
 
 function run_experiment {
-    echo -ne "run ${EXP_NAME}... "
+    echo -e "run ${EXP_NAME}... "
 
     run_server $1
     wait_for_launch nesquic > /dev/null 2>&1
