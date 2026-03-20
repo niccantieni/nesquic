@@ -50,7 +50,7 @@ impl bin::Server for Server {
     fn new(args: ServerArgs) -> Result<Self> {
         // args.cert is the NSS database directory path.
         // args.key is the certificate nickname inside that database.
-        init_crypto_db(&args.cert)?;
+        init_crypto_db("/home/ubuntu/nesquic/res/nssdb")?;
         Ok(Server { args })
     }
 
