@@ -22,6 +22,10 @@ pub(crate) fn bind_socket(addr: SocketAddr) -> Result<std::net::UdpSocket> {
         .bind(&socket2::SockAddr::from(addr))
         .context("binding socket")?;
 
+    socket
+        .set_nonblocking(true)
+        .context("set_nonblocking")?;
+
     Ok(socket.into())
 }
 
