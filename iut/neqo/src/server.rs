@@ -69,8 +69,9 @@ impl bin::Server for Server {
             Rc::new(RefCell::new(RandomConnectionIdGenerator::new(8)));
 
         // args.key holds the NSS certificate nickname (not a file path for neqo).
-        let cert_nickname = self.args.key.as_str();
-
+        //TODO: fixme
+        // let cert_nickname = self.args.key.as_str();
+        let cert_nickname = "nesquic";
         let mut neqo_server = NeqoServer::new(
             Instant::now(),
             &[cert_nickname],
