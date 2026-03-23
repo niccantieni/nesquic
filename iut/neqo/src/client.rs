@@ -1,7 +1,7 @@
 use std::{
     cell::RefCell,
     io,
-    net::{SocketAddr, ToSocketAddrs},
+    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, ToSocketAddrs},
     rc::Rc,
     time::{Duration, Instant},
 };
@@ -52,7 +52,11 @@ impl bin::Client for Client {
             .next()
             .ok_or_else(|| anyhow!("couldn't resolve {host}:{port}"))?;
 
-        let std_socket = bind_socket("[::]:0".parse().unwrap())?;
+        let bind_addr: SocketAddr = match remote {
+            SocketAddr::V4(_) => SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 0),
+            SocketAddr::V6(_) => SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), 0),
+        };
+        let std_socket = bind_socket(bind_addr)?;
         let socket = tokio::net::UdpSocket::from_std(std_socket)?;
         let local_addr = socket.local_addr()?;
 
