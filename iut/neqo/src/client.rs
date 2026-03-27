@@ -16,7 +16,7 @@ use neqo_transport::{
 use tracing::trace;
 use utils::{bin, bin::ClientArgs, perf::Request};
 
-use crate::{bind_socket, init_crypto};
+use crate::{bind_socket, init_crypto_db};
 
 const TARGET: &str = "neqo::client";
 
@@ -29,7 +29,7 @@ pub struct Client {
 
 impl bin::Client for Client {
     fn new(args: ClientArgs) -> Result<Self> {
-        init_crypto()?;
+        init_crypto_db("/home/ubuntu/nesquic/res/nssdb")?;
         Ok(Client {
             args,
             conn: None,
