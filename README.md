@@ -91,7 +91,7 @@ mdkir -p ~/nesquic/static_dependencies/neqo_dependencies/nss
 mdkir -p ~/nesquic/static_dependencies/neqo_dependencies/nspr
 touch ~/nesquic/static_dependencies/neqo_dependencies/nss/.gitkeep
 touch ~/nesquic/static_dependencies/neqo_dependencies/nspr/.gitkeep
-export LD_LIBRARY_PATH=echo $(pwd)/static_dependencies/neqo_dependencies/dist/Release/lib
+export LD_LIBRARY_PATH=$(pwd)/static_dependencies/neqo_dependencies/dist/Release/lib
 export NSS_DIR=$(pwd)/static_dependencies/neqo_dependencies/nss
 export NSS_PREBUILT=1
 ```
