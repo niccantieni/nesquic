@@ -15,7 +15,7 @@ use neqo_transport::{
     RandomConnectionIdGenerator, State, StreamId,
     server::{ConnectionRef, Server as NeqoServer},
 };
-use tracing::{error, info, trace};
+use tracing::{error, debug, info, trace};
 use utils::{bin, bin::ServerArgs, perf::Blob};
 
 use crate::{bind_socket, init_crypto_db};
@@ -50,7 +50,8 @@ impl bin::Server for Server {
     fn new(args: ServerArgs) -> Result<Self> {
         // args.cert is the NSS database directory path.
         // args.key is the certificate nickname inside that database.
-        init_crypto_db("/home/ubuntu/nesquic/res/nssdb")?;
+        debug!("initializing NSS certificate database from {}", format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")));
+        init_crypto_db(format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")).as_str())?;
         Ok(Server { args })
     }
 

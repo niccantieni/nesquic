@@ -13,7 +13,7 @@ use neqo_transport::{
     Connection, ConnectionEvent, ConnectionIdGenerator, ConnectionParameters, Output,
     RandomConnectionIdGenerator, State, StreamType,
 };
-use tracing::trace;
+use tracing::{debug, trace};
 use utils::{bin, bin::ClientArgs, perf::Request};
 
 use crate::{bind_socket, init_crypto_db};
@@ -29,7 +29,8 @@ pub struct Client {
 
 impl bin::Client for Client {
     fn new(args: ClientArgs) -> Result<Self> {
-        init_crypto_db("/home/ubuntu/nesquic/res/nssdb")?;
+        debug!("initializing NSS certificate database from {}", format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")));
+        init_crypto_db(format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")).as_str())?;
         Ok(Client {
             args,
             conn: None,
