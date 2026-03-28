@@ -68,4 +68,4 @@ jobs:
             - name: Build nesquic for library ${{ matrix.library }}
               run: cargo build --profile=${{ matrix.profile }} --locked --verbose --features=${{ matrix.library }} -p nesquic
             - name: Run tests
-              run: echo {{github.workspace }}/static_dependencies/neqo_dependencies/dist/Release/lib | sudo tee /etc/ld.so.conf.d/neqo.conf && sudo ldconfig && cargo test --profile=${{ matrix.profile }} --locked --verbose --features=${{ matrix.library }} -p nesquic
+              run: cargo test --profile=${{ matrix.profile }} --locked --verbose --features=${{ matrix.library }} -p nesquic
