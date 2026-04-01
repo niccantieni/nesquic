@@ -2,6 +2,7 @@ use std::{
     cell::RefCell,
     io,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, ToSocketAddrs},
+    num::NonZeroUsize,
     rc::Rc,
     time::{Duration, Instant},
 };
@@ -10,27 +11,27 @@ use anyhow::{anyhow, bail, Context, Result};
 use neqo_common::{Datagram, Tos, event::Provider as _};
 use neqo_crypto::AuthenticationStatus;
 use neqo_transport::{
-    Connection, ConnectionEvent, ConnectionIdGenerator, ConnectionParameters, Output,
+    Connection, ConnectionEvent, ConnectionIdGenerator, ConnectionParameters, OutputBatch,
     RandomConnectionIdGenerator, State, StreamType,
 };
-use tracing::{debug, trace};
+use neqo_udp::RecvBuf;
+use tracing::trace;
 use utils::{bin, bin::ClientArgs, perf::Request};
 
-use crate::{bind_socket, init_crypto_db};
+use crate::{UdpSocket, init_default_crypto_db};
 
 const TARGET: &str = "neqo::client";
 
 pub struct Client {
     args: ClientArgs,
     conn: Option<Connection>,
-    socket: Option<tokio::net::UdpSocket>,
+    socket: Option<UdpSocket>,
     local_addr: Option<SocketAddr>,
 }
 
 impl bin::Client for Client {
     fn new(args: ClientArgs) -> Result<Self> {
-        debug!("initializing NSS certificate database from {}", format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")));
-        init_crypto_db(format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")).as_str())?;
+        init_default_crypto_db()?;
         Ok(Client {
             args,
             conn: None,
@@ -57,9 +58,7 @@ impl bin::Client for Client {
             SocketAddr::V4(_) => SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 0),
             SocketAddr::V6(_) => SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), 0),
         };
-        let std_socket = bind_socket(bind_addr)?;
-        let socket = tokio::net::UdpSocket::from_std(std_socket)?;
-        let local_addr = socket.local_addr()?;
+        let (socket, local_addr) = UdpSocket::bind(bind_addr)?;
 
         let cid_gen: Rc<RefCell<dyn ConnectionIdGenerator>> =
             Rc::new(RefCell::new(RandomConnectionIdGenerator::new(8)));
@@ -78,7 +77,7 @@ impl bin::Client for Client {
         trace!(target: TARGET, "connecting to {remote}");
 
         let mut connected = false;
-        drive_until(&mut conn, &socket, local_addr, |conn| {
+        drive_until(&mut conn, &socket, local_addr, |conn: &mut Connection| {
             while let Some(event) = conn.next_event() {
                 match event {
                     ConnectionEvent::AuthenticationNeeded => {
@@ -184,16 +183,21 @@ impl bin::Client for Client {
             );
         }
 
-        // Graceful close: signal shutdown and drain final output packets.
+        // Graceful close: drive the connection through Closing → Closed so the
+        // peer receives the CONNECTION_CLOSE frame and we wait for acknowledgement.
         conn.close(Instant::now(), 0, "done");
-        loop {
-            match conn.process_output(Instant::now()) {
-                Output::Datagram(d) => {
-                    let _ = socket.send_to(d.as_ref(), d.destination()).await;
+        drive_until(conn, socket, local_addr, |conn| {
+            while let Some(event) = conn.next_event() {
+                if let ConnectionEvent::StateChange(State::Closed(ref reason)) = event {
+                    if reason.is_error() {
+                        bail!("connection closed with error during shutdown: {:?}", reason);
+                    }
+                    return Ok(true);
                 }
-                _ => break,
             }
-        }
+            Ok(false)
+        })
+        .await?;
 
         Ok(())
     }
@@ -203,18 +207,23 @@ impl bin::Client for Client {
 ///
 /// On each iteration:
 /// 1. Calls `done(conn)` to drain connection events and check for completion.
-/// 2. Drains outgoing datagrams by calling `process_output()` in a loop.
-/// 3. Waits for the next incoming UDP packet or the neqo callback timer.
+/// 2. Drains outgoing datagram batches via `process_multiple_output`, retrying
+///    on `WouldBlock` (send backpressure).
+/// 3. Waits for the next incoming UDP packet or the neqo callback timer, then
+///    feeds all received datagrams to `process_multiple_input` in one call.
 async fn drive_until<F>(
     conn: &mut Connection,
-    socket: &tokio::net::UdpSocket,
+    socket: &UdpSocket,
     local_addr: SocketAddr,
     mut done: F,
 ) -> Result<()>
 where
     F: FnMut(&mut Connection) -> Result<bool>,
 {
-    let mut timeout: Option<Duration> = None;
+    let max_datagrams =
+        NonZeroUsize::new(socket.max_gso_segments()).unwrap_or(NonZeroUsize::MIN);
+    let mut recv_buf = RecvBuf::default();
+    let mut timeout: Option<Duration>;
 
     loop {
         // 1. Let the caller process events and decide if we're done.
@@ -222,20 +231,26 @@ where
             return Ok(());
         }
 
-        // 2. Drain all outgoing datagrams.
+        // 2. Drain all outgoing datagram batches (GSO-aware).
         loop {
-            match conn.process_output(Instant::now()) {
-                Output::Datagram(d) => {
-                    socket
-                        .send_to(d.as_ref(), d.destination())
-                        .await
-                        .context("send UDP datagram")?;
+            match conn.process_multiple_output(Instant::now(), max_datagrams) {
+                OutputBatch::DatagramBatch(d) => {
+                    // Retry on WouldBlock to respect OS send-buffer backpressure.
+                    loop {
+                        match socket.send(&d) {
+                            Ok(()) => break,
+                            Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                                socket.writable().await.context("socket writable")?;
+                            }
+                            Err(e) => return Err(e).context("send UDP datagram"),
+                        }
+                    }
                 }
-                Output::Callback(dur) => {
+                OutputBatch::Callback(dur) => {
                     timeout = Some(dur);
                     break;
                 }
-                Output::None => {
+                OutputBatch::None => {
                     timeout = None;
                     break;
                 }
@@ -251,17 +266,12 @@ where
         let timeout_dur = timeout;
         tokio::select! {
             biased;
+            // wait for socket to be readable, then read and process one datagram
             result = socket.readable() => {
                 result.context("socket readable")?;
-                let mut recv_buf = vec![0u8; 65536];
-                match socket.try_recv_from(&mut recv_buf) {
-                    Ok((n, src)) => {
-                        recv_buf.truncate(n);
-                        let dgram = Datagram::new(src, local_addr, Tos::default(), recv_buf);
-                        conn.process_input(dgram, Instant::now());
-                    }
-                    Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {}
-                    Err(e) => return Err(e).context("recv_from"),
+                // Drain all datagrams available right now (GRO may have batched several).
+                while let Some(dgrams) = socket.recv(local_addr, &mut recv_buf).context("recv")? {
+                    conn.process_multiple_input(dgrams, Instant::now());
                 }
             }
             _ = async {
@@ -270,7 +280,7 @@ where
                     None => std::future::pending::<()>().await,
                 }
             } => {
-                // Timer fired — loop back to call process_output again.
+                // Timer fired — loop back to call process_multiple_output again.
             }
         }
     }

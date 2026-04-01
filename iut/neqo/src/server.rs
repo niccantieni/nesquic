@@ -15,10 +15,10 @@ use neqo_transport::{
     RandomConnectionIdGenerator, State, StreamId,
     server::{ConnectionRef, Server as NeqoServer},
 };
-use tracing::{error, debug, info, trace};
+use tracing::{error, info, trace};
 use utils::{bin, bin::ServerArgs, perf::Blob};
 
-use crate::{bind_socket, init_crypto_db};
+use crate::{bind_tokio_socket, init_default_crypto_db};
 
 const TARGET: &str = "neqo::server";
 
@@ -48,17 +48,12 @@ pub struct Server {
 
 impl bin::Server for Server {
     fn new(args: ServerArgs) -> Result<Self> {
-        // args.cert is the NSS database directory path.
-        // args.key is the certificate nickname inside that database.
-        debug!("initializing NSS certificate database from {}", format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")));
-        init_crypto_db(format!("{}/../../res/nssdb", env!("CARGO_MANIFEST_DIR")).as_str())?;
+        init_default_crypto_db()?;
         Ok(Server { args })
     }
 
     async fn listen(&mut self) -> Result<()> {
-        let std_socket = bind_socket(self.args.listen)?;
-        let socket = tokio::net::UdpSocket::from_std(std_socket)?;
-        let local_addr = socket.local_addr()?;
+        let (socket, local_addr) = bind_tokio_socket(self.args.listen)?;
 
         info!(target: TARGET, "listening on {local_addr}");
 
@@ -69,7 +64,6 @@ impl bin::Server for Server {
         let cid_gen: Rc<RefCell<dyn ConnectionIdGenerator>> =
             Rc::new(RefCell::new(RandomConnectionIdGenerator::new(8)));
 
-        // args.key holds the NSS certificate nickname (not a file path for neqo).
         //TODO: fixme
         // let cert_nickname = self.args.key.as_str();
         let cert_nickname = "nesquic";
