@@ -126,7 +126,7 @@
         "showValue": "auto",
         "stacking": "none",
         "tooltip": {
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         },
         "xField": "job",
@@ -138,12 +138,13 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
           "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic\" and r._field == \"throughput\")\n  |> filter(fn: (r) => r.library == \"msquic\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"throughput\"})\n  |> group()",
-          "refId": ""
+          "refId": "A"
         }
       ],
       "timeFrom": null,
@@ -235,210 +236,7 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text",
-      "panels": []
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 40
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 27,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Server I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 40
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 28,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Client I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
+      "type": "text"
     },
     {
       "cacheTimeout": null,
@@ -494,7 +292,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 29,
+      "id": 5,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -526,12 +324,13 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
@@ -556,6 +355,108 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 40
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 6,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Server I/O Data Volume",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
@@ -591,11 +492,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 32
+        "y": 48
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 30,
+      "id": 7,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -627,17 +528,120 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Client I/O Syscalls",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 56
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 8,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -724,210 +728,7 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text",
-      "panels": []
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 88
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 35,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Server I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 88
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 36,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Client I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
+      "type": "text"
     },
     {
       "cacheTimeout": null,
@@ -983,7 +784,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 37,
+      "id": 11,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1015,12 +816,13 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
@@ -1045,6 +847,108 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 88
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 12,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Server I/O Data Volume",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
@@ -1080,11 +984,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 80
+        "y": 96
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 38,
+      "id": 13,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1116,17 +1020,120 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Client I/O Syscalls",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 104
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 14,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1213,210 +1220,7 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text",
-      "panels": []
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 136
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 43,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Server I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 136
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 44,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Client I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
+      "type": "text"
     },
     {
       "cacheTimeout": null,
@@ -1472,7 +1276,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 45,
+      "id": 17,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1504,12 +1308,13 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
@@ -1534,6 +1339,108 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 136
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 18,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Server I/O Data Volume",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
@@ -1569,11 +1476,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 128
+        "y": 144
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 46,
+      "id": 19,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1605,17 +1512,120 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Client I/O Syscalls",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 152
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 20,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1702,210 +1712,7 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text",
-      "panels": []
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 184
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 51,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Server I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "influxdb",
-      "description": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "none",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12.0,
-        "x": 12.0,
-        "y": 184
-      },
-      "height": null,
-      "hideTimeOverride": false,
-      "id": 52,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "maxPerRow": null,
-      "minSpan": null,
-      "options": {
-        "barRadius": 0.0,
-        "barWidth": 0.97,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "syscall",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "repeat": null,
-      "repeatDirection": null,
-      "span": null,
-      "targets": [
-        {
-          "datasource": null,
-          "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Client I/O Data Volume",
-      "transformations": [],
-      "transparent": false,
-      "type": "barchart"
+      "type": "text"
     },
     {
       "cacheTimeout": null,
@@ -1961,7 +1768,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 53,
+      "id": 23,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1993,12 +1800,13 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
@@ -2023,6 +1831,108 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 184
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 24,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"server\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Server I/O Data Volume",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
@@ -2058,11 +1968,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 176
+        "y": 192
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 54,
+      "id": 25,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -2094,17 +2004,120 @@
       "span": null,
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
           "hide": false,
-          "interval": "",
-          "legendFormat": "",
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
-          "refId": ""
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
+          "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Client I/O Syscalls",
+      "transformations": [],
+      "transparent": false,
+      "type": "barchart"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "influxdb",
+      "description": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "none",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Data Volume [kB]",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12.0,
+        "x": 12.0,
+        "y": 200
+      },
+      "height": null,
+      "hideTimeOverride": false,
+      "id": 26,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": null,
+      "minSpan": null,
+      "options": {
+        "barRadius": 0.0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "syscall",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "repeat": null,
+      "repeatDirection": null,
+      "span": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "hide": false,
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"msquic\" and r.mode == \"client\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -2119,22 +2132,22 @@
   "templating": {
     "list": [
       {
-        "name": "nesquic_run",
-        "label": "Run",
-        "type": "query",
+        "allValue": ".*",
+        "current": {},
         "datasource": {
           "type": "influxdb",
           "uid": "influxdb"
         },
+        "hide": 0,
+        "includeAll": true,
+        "label": "Run",
+        "multi": false,
+        "name": "nesquic_run",
+        "options": [],
         "query": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"nesquic\", tag: \"nesquic_run\")",
         "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
         "sort": 1,
-        "current": {},
-        "options": [],
-        "hide": 0
+        "type": "query"
       }
     ]
   },
