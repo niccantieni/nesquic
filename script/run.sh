@@ -52,7 +52,11 @@ function wait_for_term {
 
 function run_client {
     MAHIMAHI_BASE="10.0.0.1"
-    CMD="PR_PUSH_GATEWAY=http://${MAHIMAHI_BASE}:9091 "
+    CMD="RUST_LOG=${RUST_LOG:-error} "
+    CMD+="INFLUX_URL=http://${MAHIMAHI_BASE}:8086 "
+    CMD+="INFLUX_TOKEN=${INFLUX_TOKEN:-nesquic-token} "
+    CMD+="INFLUX_ORG=${INFLUX_ORG:-nesquic} "
+    CMD+="INFLUX_BUCKET=${INFLUX_BUCKET:-nesquic} "
     CMD+="mm-delay ${EXP_DELAY} "
 
     if [ "${EXP_LOSS}" -gt 0 ]; then
@@ -69,6 +73,11 @@ function run_client {
 }
 
 function run_server {
+    RUST_LOG="${RUST_LOG:-error}" \
+    INFLUX_URL="http://localhost:8086" \
+    INFLUX_TOKEN="${INFLUX_TOKEN:-nesquic-token}" \
+    INFLUX_ORG="${INFLUX_ORG:-nesquic}" \
+    INFLUX_BUCKET="${INFLUX_BUCKET:-nesquic}" \
     ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) &
 }
 
@@ -113,7 +122,7 @@ function setup {
     may_fail sudo ip link del ${VETH_MM}
 
     echo -e "${COLOR_YELLOW}Setting up firewall${COLOR_OFF}"
-    sudo ufw allow from 10.0.0.0/24 to any port 9901
+    sudo ufw allow from 10.0.0.0/24 to any port 8086
     sudo ufw allow from 10.0.0.0/24 to any port 4433
 
     if [ ${NESQUIC_BENCHMARK} -eq 1 ]; then
@@ -195,9 +204,9 @@ function run_library_experiments {
 }
 
 # check if the pushgateway is running
-docker ps --filter "name=pushgateway" --filter "status=running" --format '{{.Names}}' | grep -wq pushgateway
+docker ps --filter "name=influxdb" --filter "status=running" --format '{{.Names}}' | grep -wq influxdb
 if [ $? -ne 0 ]; then
-  echo -e "${COLOR_RED}Pushgateway is not running${COLOR_OFF}"
+  echo -e "${COLOR_RED}InfluxDB is not running${COLOR_OFF}"
   exit 1
 fi
 
