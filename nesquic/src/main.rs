@@ -90,6 +90,7 @@ fn labels(cli: &Cli) -> HashMap<String, String> {
             (hs[0].to_string(), hs[1].to_string())
         })
         .collect::<HashMap<String, String>>();
+    trace!("Run labels: {:?}", run_labels);
 
     let library = cli.command.args().lib;
 
@@ -98,8 +99,9 @@ fn labels(cli: &Cli) -> HashMap<String, String> {
     labels.insert(String::from("library"), library.name());
     labels.insert(String::from("mode"), mode);
     labels.insert(String::from("version"), library.version());
-    labels.insert(String::from("nesquic_debug_version"), env::var("NESQUIC_DEBUG_VERSION").unwrap_or_else(|_| String::from("")));
     labels.extend(run_labels.into_iter());
+
+    trace!("Final labels: {:?}", labels);
 
     labels
 }

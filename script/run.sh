@@ -67,7 +67,7 @@ function run_client {
         CMD+="mm-link ${RES_DIR}/traces/${EXP_LINK}.up ${RES_DIR}/traces/${EXP_LINK}.down -- "
     fi
 
-    CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu $((NUM_CPU - 4)) --metric-cpu $((NUM_CPU - 3)) https://${MAHIMAHI_BASE}:4433"
+    CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu $((NUM_CPU - 4)) --metric-cpu $((NUM_CPU - 3)) https://${MAHIMAHI_BASE}:4433 -L nesquic_run:${NESQUIC_RUN_LABEL}"
 
     eval ${CMD}
 }
@@ -78,7 +78,7 @@ function run_server {
     INFLUX_TOKEN="${INFLUX_TOKEN:-nesquic-token}" \
     INFLUX_ORG="${INFLUX_ORG:-nesquic}" \
     INFLUX_BUCKET="${INFLUX_BUCKET:-nesquic}" \
-    ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) &
+    ${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) -L nesquic_run:${NESQUIC_RUN_LABEL} &
 }
 
 function kill_nesquic {
