@@ -126,7 +126,7 @@
         "showValue": "auto",
         "stacking": "none",
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         },
         "xField": "job",
@@ -138,13 +138,12 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
+          "interval": "",
+          "legendFormat": "",
           "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic\" and r._field == \"throughput\")\n  |> filter(fn: (r) => r.library == \"quinn\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"throughput\"})\n  |> group()",
-          "refId": "A"
+          "refId": ""
         }
       ],
       "timeFrom": null,
@@ -236,7 +235,8 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text"
+      "type": "text",
+      "panels": []
     },
     {
       "cacheTimeout": null,
@@ -253,7 +253,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Invocations",
+            "axisLabel": "Data Volume [kB]",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -287,12 +287,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 0,
-        "y": 32
+        "x": 12.0,
+        "y": 40
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 5,
+      "id": 27,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -324,18 +324,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Syscalls",
+      "title": "Server I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -394,7 +393,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 6,
+      "id": 28,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -426,18 +425,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Data Volume",
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -492,11 +490,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 48
+        "y": 32
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 7,
+      "id": 29,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -528,18 +526,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Syscalls",
+      "title": "Server I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -559,7 +556,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
+            "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -593,12 +590,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 12.0,
-        "y": 56
+        "x": 0,
+        "y": 32
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 8,
+      "id": 30,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -630,18 +627,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"unbounded\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Data Volume",
+      "title": "Client I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -728,7 +724,8 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text"
+      "type": "text",
+      "panels": []
     },
     {
       "cacheTimeout": null,
@@ -745,7 +742,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Invocations",
+            "axisLabel": "Data Volume [kB]",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -779,12 +776,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 0,
-        "y": 80
+        "x": 12.0,
+        "y": 88
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 11,
+      "id": 35,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -816,18 +813,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Syscalls",
+      "title": "Server I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -886,7 +882,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 12,
+      "id": 36,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -918,18 +914,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Data Volume",
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -984,11 +979,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 96
+        "y": 80
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 13,
+      "id": 37,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1020,18 +1015,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Syscalls",
+      "title": "Server I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1051,7 +1045,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
+            "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -1085,12 +1079,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 12.0,
-        "y": 104
+        "x": 0,
+        "y": 80
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 14,
+      "id": 38,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1122,18 +1116,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay5\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Data Volume",
+      "title": "Client I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1220,7 +1213,8 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text"
+      "type": "text",
+      "panels": []
     },
     {
       "cacheTimeout": null,
@@ -1237,7 +1231,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Invocations",
+            "axisLabel": "Data Volume [kB]",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -1271,12 +1265,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 0,
-        "y": 128
+        "x": 12.0,
+        "y": 136
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 17,
+      "id": 43,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1308,18 +1302,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Syscalls",
+      "title": "Server I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1378,7 +1371,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 18,
+      "id": 44,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1410,18 +1403,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Data Volume",
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1476,11 +1468,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 144
+        "y": 128
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 19,
+      "id": 45,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1512,18 +1504,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Syscalls",
+      "title": "Server I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1543,7 +1534,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
+            "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -1577,12 +1568,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 12.0,
-        "y": 152
+        "x": 0,
+        "y": 128
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 20,
+      "id": 46,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1614,18 +1605,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"delay20\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Data Volume",
+      "title": "Client I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1712,7 +1702,8 @@
       "title": "",
       "transformations": [],
       "transparent": false,
-      "type": "text"
+      "type": "text",
+      "panels": []
     },
     {
       "cacheTimeout": null,
@@ -1729,7 +1720,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Invocations",
+            "axisLabel": "Data Volume [kB]",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -1763,12 +1754,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 0,
-        "y": 176
+        "x": 12.0,
+        "y": 184
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 23,
+      "id": 51,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1800,18 +1791,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Syscalls",
+      "title": "Server I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1870,7 +1860,7 @@
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 24,
+      "id": 52,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -1902,18 +1892,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Server I/O Data Volume",
+      "title": "Client I/O Data Volume",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -1968,11 +1957,11 @@
         "h": 8,
         "w": 12.0,
         "x": 0,
-        "y": 192
+        "y": 176
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 25,
+      "id": 53,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -2004,18 +1993,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"server\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Syscalls",
+      "title": "Server I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -2035,7 +2023,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Data Volume [kB]",
+            "axisLabel": "Invocations",
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
@@ -2069,12 +2057,12 @@
       "gridPos": {
         "h": 8,
         "w": 12.0,
-        "x": 12.0,
-        "y": 200
+        "x": 0,
+        "y": 176
       },
       "height": null,
       "hideTimeOverride": false,
-      "id": 26,
+      "id": 54,
       "interval": null,
       "links": [],
       "maxDataPoints": 100,
@@ -2106,18 +2094,17 @@
       "span": null,
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb"
-          },
+          "datasource": null,
           "hide": false,
-          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"volume_kb_sum\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"driving\")\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)\n  |> rename(columns: {\"_value\": \"volume_kb_sum\"})\n  |> group()",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "",
+          "query": "from(bucket: \"nesquic\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nesquic_io\" and r._field == \"count\")\n  |> filter(fn: (r) => r.library == \"quinn\" and r.mode == \"client\" and r.job == \"driving\")\n  |> rename(columns: {\"_value\": \"count\"})\n  |> group()\n  |> filter(fn: (r) => r.nesquic_run =~ /^${nesquic_run:regex}$/)",
+          "refId": ""
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Client I/O Data Volume",
+      "title": "Client I/O Syscalls",
       "transformations": [],
       "transparent": false,
       "type": "barchart"
@@ -2132,22 +2119,22 @@
   "templating": {
     "list": [
       {
-        "allValue": ".*",
-        "current": {},
+        "name": "nesquic_run",
+        "label": "Run",
+        "type": "query",
         "datasource": {
           "type": "influxdb",
           "uid": "influxdb"
         },
-        "hide": 0,
-        "includeAll": true,
-        "label": "Run",
-        "multi": false,
-        "name": "nesquic_run",
-        "options": [],
         "query": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"nesquic\", tag: \"nesquic_run\")",
         "refresh": 2,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": false,
         "sort": 1,
-        "type": "query"
+        "current": {},
+        "options": [],
+        "hide": 0
       }
     ]
   },

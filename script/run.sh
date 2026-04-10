@@ -19,6 +19,8 @@ WORKSPACE=$(dirname "$(readlink -f "$0")")/..
 BIN="${WORKSPACE}/target/release/nesquic"
 RES_DIR="${WORKSPACE}/res"
 
+NESQUIC_RUN_LABEL="${NESQUIC_RUN_LABEL:-default}"
+
 function may_fail {
     ($@ > /dev/null 2>&1) || true
 }
