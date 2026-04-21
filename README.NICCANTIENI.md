@@ -71,6 +71,9 @@ echo "/home/ubuntu/nesquic/static_dependencies/neqo_dependencies/dist/Release/li
 sudo ldconfig
 ldconfig -p
 
+https://man.freebsd.org/cgi/man.cgi?query=ldconfig&sektion=8#end
+
+
 maybe?
 ```
 Cargo.toml
