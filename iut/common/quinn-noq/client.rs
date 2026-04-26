@@ -30,14 +30,8 @@ impl bin::Client for Client {
             let path = std::path::Path::new(dir).join("client.sqlog");
             let file = std::fs::File::create(&path)?;
             let mut transport = TransportConfig::default();
-            // quinn
-            // let mut qlog_cfg = QlogConfig::default();
-            // noq
-            let mut qlog_cfg = QlogConfig::new(Box::new(file));
-            // quinn
-            // qlog_cfg.writer(Box::new(file));
-
-            // quinn
+            let mut qlog_cfg = QlogConfig::default();
+            qlog_cfg.writer(Box::new(file));
             transport.qlog_stream(qlog_cfg.into_stream());
             config.transport_config(Arc::new(transport));
         }
