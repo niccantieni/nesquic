@@ -56,7 +56,7 @@ pub struct ServerArgs {
     pub listen: SocketAddr,
     /// produce qlog files in this directory
     /// if not set, qlog files will not be produced
-    #[clap(long, default_value = "", )]
+    #[clap(long)]
     pub qlog: Option<String>,
 }
 

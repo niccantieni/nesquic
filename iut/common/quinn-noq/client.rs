@@ -26,13 +26,7 @@ impl bin::Client for Client {
         let mut config = ClientConfig::new(Arc::new(QuicClientConfig::try_from(client_crypto)?));
 
         if let Some(ref dir) = args.qlog {
-            use crate::backend::{QlogConfig, TransportConfig};
-            let path = std::path::Path::new(dir).join("client.sqlog");
-            let file = std::fs::File::create(&path)?;
-            let mut transport = TransportConfig::default();
-            let mut qlog_cfg = QlogConfig::default();
-            qlog_cfg.writer(Box::new(file));
-            transport.qlog_stream(qlog_cfg.into_stream());
+            let transport = crate::setup_qlog_transport(dir, "client")?;
             config.transport_config(Arc::new(transport));
         }
 
