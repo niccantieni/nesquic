@@ -2919,6 +2919,18 @@ dependencies = [
 
 [[package]]
 name = "qlog"
+version = "0.15.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f15b83c59e6b945f2261c95a1dd9faf239187f32ff0a96af1d1d28c4557f919"
+dependencies = [
+ "serde",
+ "serde_json",
+ "serde_with",
+ "smallvec",
+]
+
+[[package]]
+name = "qlog"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16689c500fede96aa7d5e1f8924abe08fafb65146d7e192826bb5fb57a1e1ad0"
@@ -3043,6 +3055,7 @@ dependencies = [
  "fastbloom",
  "getrandom 0.3.4",
  "lru-slab",
+ "qlog 0.15.2",
  "rand 0.9.4",
  "ring",
  "rustc-hash",
