@@ -26,7 +26,19 @@ impl bin::Server for Server {
             .with_single_cert(certs, key)?;
         server_crypto.alpn_protocols = vec![b"perf".to_vec()];
 
-        let config = ServerConfig::with_crypto(Arc::new(QuicServerConfig::try_from(server_crypto)?));
+        let mut config = ServerConfig::with_crypto(Arc::new(QuicServerConfig::try_from(server_crypto)?));
+
+        if let Some(ref dir) = args.qlog {
+            todo!("qlog support for noq");
+            // use crate::backend::{QlogConfig, TransportConfig};
+            // let path = std::path::Path::new(dir).join("server.sqlog");
+            // let file = std::fs::File::create(&path)?;
+            // let mut transport = TransportConfig::default();
+            // let mut qlog_cfg = QlogConfig::default();
+            // qlog_cfg.writer(Box::new(file));
+            // transport.qlog_stream(qlog_cfg.into_stream());
+            // config.transport_config(Arc::new(transport));
+        }
 
         Ok(Server { args, config })
     }

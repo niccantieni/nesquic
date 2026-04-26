@@ -23,7 +23,24 @@ impl bin::Client for Client {
 
         client_crypto.alpn_protocols = vec![b"perf".to_vec()];
 
-        let config = ClientConfig::new(Arc::new(QuicClientConfig::try_from(client_crypto)?));
+        let mut config = ClientConfig::new(Arc::new(QuicClientConfig::try_from(client_crypto)?));
+
+        if let Some(ref dir) = args.qlog {
+            use crate::backend::{QlogConfig, TransportConfig};
+            let path = std::path::Path::new(dir).join("client.sqlog");
+            let file = std::fs::File::create(&path)?;
+            let mut transport = TransportConfig::default();
+            // quinn
+            // let mut qlog_cfg = QlogConfig::default();
+            // noq
+            let mut qlog_cfg = QlogConfig::new(Box::new(file));
+            // quinn
+            // qlog_cfg.writer(Box::new(file));
+
+            // quinn
+            transport.qlog_stream(qlog_cfg.into_stream());
+            config.transport_config(Arc::new(transport));
+        }
 
         Ok(Client {
             args,

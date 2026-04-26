@@ -21,7 +21,7 @@ BIN="${WORKSPACE}/target/release/nesquic"
 RES_DIR="${WORKSPACE}/res"
 # if QLOG_DIR is set and is a relative path, prefix it with ${WORKSPACE}
 if [ -n "${QLOG_DIR}" ] && [[ "${QLOG_DIR}" != /* ]]; then
-    QLOG_DIR="${WORKSPACE}/${QLOG_DIR}/${NESQUIC_RUN_LABEL}"
+    ROOT_QLOG_DIR="${WORKSPACE}/${QLOG_DIR}/${NESQUIC_RUN_LABEL}"
 fi
 
 NESQUIC_RUN_LABEL="${NESQUIC_RUN_LABEL:-default}"
@@ -77,8 +77,8 @@ function run_client {
     CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu $((NUM_CPU - 4)) --metric-cpu $((NUM_CPU - 3)) https://${MAHIMAHI_BASE}:4433 -L nesquic_run:${NESQUIC_RUN_LABEL}"
     
     # if qlog is enabled, add qlog options to the command
-    if [ -n "${QLOG_DIR}" ]; then
-        CMD+=" --qlog ${QLOG_DIR}/$1"
+    if [ -n "${EXP_QLOG_DIR}" ]; then
+        CMD+=" --qlog ${EXP_QLOG_DIR}"
     fi
 
     eval ${CMD}
@@ -92,8 +92,8 @@ function run_server {
     CMD+="INFLUX_BUCKET=${INFLUX_BUCKET:-nesquic} "
     CMD+="${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) -L nesquic_run:${NESQUIC_RUN_LABEL}"
 
-    if [ -n "${QLOG_DIR}" ]; then
-        CMD+=" --qlog ${QLOG_DIR}/$1"
+    if [ -n "${EXP_QLOG_DIR}" ]; then
+        CMD+=" --qlog ${EXP_QLOG_DIR}"
     fi
 
     CMD+=" &"
@@ -194,6 +194,11 @@ function config_exp_driving {
 function run_experiment {
     echo -e "run ${EXP_NAME}... "
 
+    if [ -n "${ROOT_QLOG_DIR}" ]; then
+        EXP_QLOG_DIR="${LIB_QLOG_DIR}/${EXP_NAME}"
+        mkdir -p ${EXP_QLOG_DIR}
+    fi
+
     run_server $1
     wait_for_launch nesquic > /dev/null 2>&1
     run_client $1
@@ -209,8 +214,9 @@ function run_library_experiments {
     echo -e "${COLOR_YELLOW}Benchmarking $1${COLOR_OFF}"
 
     # if QLOG_DIR is set, create a subdirectory for the library
-    if [ -n "${QLOG_DIR}" ]; then
-        mkdir -p ${QLOG_DIR}/$1
+    if [ -n "${ROOT_QLOG_DIR}" ]; then
+        LIB_QLOG_DIR="${ROOT_QLOG_DIR}/$1"
+        mkdir -p ${LIB_QLOG_DIR}
     fi
 
     config_exp_unbounded
