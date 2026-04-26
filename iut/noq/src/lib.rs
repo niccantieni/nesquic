@@ -6,7 +6,7 @@ pub(crate) mod backend {
 pub(crate) const CLIENT_TARGET: &str = "noq::client";
 pub(crate) const SERVER_TARGET: &str = "noq::server";
 
-#[path = "../../common/quinn-noq/mod.rs"]
+
 mod common;
 
 pub use common::{Client, Server};

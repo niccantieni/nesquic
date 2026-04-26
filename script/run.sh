@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 COLOR_RED='\033[0;31m'
 COLOR_GREEN='\033[0;32m'
 COLOR_YELLOW='\033[0;33m'
@@ -17,6 +19,10 @@ NESQUIC_BENCHMARK=0
 WORKSPACE=$(dirname "$(readlink -f "$0")")/..
 BIN="${WORKSPACE}/target/release/nesquic"
 RES_DIR="${WORKSPACE}/res"
+# if QLOG_DIR is set and is a relative path, prefix it with ${WORKSPACE}
+if [ -n "${QLOG_DIR}" ] && [[ "${QLOG_DIR}" != /* ]]; then
+    QLOG_DIR="${WORKSPACE}/${QLOG_DIR}/${NESQUIC_RUN_LABEL}"
+fi
 
 NESQUIC_RUN_LABEL="${NESQUIC_RUN_LABEL:-default}"
 
@@ -69,6 +75,11 @@ function run_client {
     fi
 
     CMD+="${BIN}-$1 client -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --blob ${EXP_BLOB} --quic-cpu $((NUM_CPU - 4)) --metric-cpu $((NUM_CPU - 3)) https://${MAHIMAHI_BASE}:4433 -L nesquic_run:${NESQUIC_RUN_LABEL}"
+    
+    # if qlog is enabled, add qlog options to the command
+    if [ -n "${QLOG_DIR}" ]; then
+        CMD+=" --qlog ${QLOG_DIR}/$1"
+    fi
 
     eval ${CMD}
 }
@@ -79,7 +90,13 @@ function run_server {
     CMD+="INFLUX_TOKEN=${INFLUX_TOKEN:-nesquic-token} "
     CMD+="INFLUX_ORG=${INFLUX_ORG:-nesquic} "
     CMD+="INFLUX_BUCKET=${INFLUX_BUCKET:-nesquic} "
-    CMD+="${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) -L nesquic_run:${NESQUIC_RUN_LABEL} &"
+    CMD+="${BIN}-$1 server -j ${EXP_NAME} --lib $1 --cert ${RES_DIR}/pem/cert.pem --key ${RES_DIR}/pem/key.pem 0.0.0.0:4433 --quic-cpu $((NUM_CPU - 2)) --metric-cpu $((NUM_CPU - 1)) -L nesquic_run:${NESQUIC_RUN_LABEL}"
+
+    if [ -n "${QLOG_DIR}" ]; then
+        CMD+=" --qlog ${QLOG_DIR}/$1"
+    fi
+
+    CMD+=" &"
 
     eval ${CMD}
 }
@@ -190,6 +207,11 @@ function run_experiment {
 
 function run_library_experiments {
     echo -e "${COLOR_YELLOW}Benchmarking $1${COLOR_OFF}"
+
+    # if QLOG_DIR is set, create a subdirectory for the library
+    if [ -n "${QLOG_DIR}" ]; then
+        mkdir -p ${QLOG_DIR}/$1
+    fi
 
     config_exp_unbounded
     run_experiment $1

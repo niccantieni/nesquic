@@ -1,0 +1,111 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 17f29bc..9c8ce91 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -2917,6 +2917,18 @@ dependencies = [
+  "syn 1.0.109",
+ ]
+ 
++[[package]]
++name = "qlog"
++version = "0.15.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "0f15b83c59e6b945f2261c95a1dd9faf239187f32ff0a96af1d1d28c4557f919"
++dependencies = [
++ "serde",
++ "serde_json",
++ "serde_with",
++ "smallvec",
++]
++
+ [[package]]
+ name = "qlog"
+ version = "0.16.0"
+@@ -3043,6 +3055,7 @@ dependencies = [
+  "fastbloom",
+  "getrandom 0.3.4",
+  "lru-slab",
++ "qlog 0.15.2",
+  "rand 0.9.4",
+  "ring",
+  "rustc-hash",
+diff --git a/iut/quiche/src/client.rs b/iut/quiche/src/client.rs
+index c119226..d3307ce 100644
+--- a/iut/quiche/src/client.rs
++++ b/iut/quiche/src/client.rs
+@@ -50,6 +50,7 @@ impl bin::Client for Client {
+         // TODO: here we have to set the CA's certificate
+         let mut params = ConnectionParams::default();
+         params.settings.alpn = vec![b"perf".to_vec()];
++        params.settings.qlog_dir = self.args.qlog.clone();
+ 
+         let (benchmark, send) = Benchmark::new();
+         let Ok(qconn) = quic::connect_with_config(socket, None, &params, benchmark).await else {
+diff --git a/iut/quiche/src/server.rs b/iut/quiche/src/server.rs
+index d46bf42..d792191 100644
+--- a/iut/quiche/src/server.rs
++++ b/iut/quiche/src/server.rs
+@@ -24,6 +24,7 @@ impl bin::Server for Server {
+             private_key: &self.args.key,
+             kind: tokio_quiche::settings::CertificateKind::X509,
+         });
++        params.settings.qlog_dir = self.args.qlog.clone();
+ 
+         let mut listeners = tokio_quiche::listen([socket], params, DefaultMetrics)?;
+         let accept = &mut listeners[0];
+diff --git a/iut/quinn/Cargo.toml b/iut/quinn/Cargo.toml
+index d262927..06b47fc 100644
+--- a/iut/quinn/Cargo.toml
++++ b/iut/quinn/Cargo.toml
+@@ -7,7 +7,7 @@ edition = "2021"
+ anyhow = "1.0.102"
+ bytes = "1.11.1"
+ tracing = "0.1.44"
+-quinn = { version = "0.11.9", features = ["rustls"] }
++quinn = { version = "0.11.9", features = ["rustls", "qlog"] }
+ quinn-proto = "0.11.14"
+ rustls = { version = "0.23.38", default-features = false, features = ["ring"] }
+ socket2 = "0.6.3"
+diff --git a/utils/src/bin.rs b/utils/src/bin.rs
+index f963f37..b293498 100644
+--- a/utils/src/bin.rs
++++ b/utils/src/bin.rs
+@@ -20,6 +20,11 @@ pub struct ClientArgs {
+ 
+     #[clap(short, long)]
+     pub blob: String,
++
++    /// produce qlog files in this directory
++    /// if not set, qlog files will not be produced
++    #[clap(long)]
++    pub qlog: Option<String>,
+ }
+ 
+ impl ClientArgs {
+@@ -29,6 +34,7 @@ impl ClientArgs {
+             unencrypted: false,
+             cert: format!("{}/../res/pem/cert.pem", env!("CARGO_MANIFEST_DIR")),
+             blob: "50Mbit".to_string(),
++            qlog: None,
+         }
+     }
+ }
+@@ -48,6 +54,10 @@ pub struct ServerArgs {
+     /// Address to listen on
+     #[clap(default_value = "0.0.0.0:4433")]
+     pub listen: SocketAddr,
++    /// produce qlog files in this directory
++    /// if not set, qlog files will not be produced
++    #[clap(long, default_value = "", )]
++    pub qlog: Option<String>,
+ }
+ 
+ impl ServerArgs {
+@@ -57,6 +67,7 @@ impl ServerArgs {
+             key: format!("{}/../res/pem/key.pem", env!("CARGO_MANIFEST_DIR")),
+             cert: format!("{}/../res/pem/cert.pem", env!("CARGO_MANIFEST_DIR")),
+             listen: "127.0.0.1:4433".parse().unwrap(),
++            qlog: None,
+         }
+     }
+ }
