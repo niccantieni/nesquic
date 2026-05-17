@@ -41,7 +41,7 @@ bpftool btf dump file /sys/kernel/btf/vmlinux format c > include/vmlinux.h
 For Neqo, the following additional dependencies are needed: `libnss3`. While the distributed versions are not up to date, the corresponding libraries need to be compiled manually. See below in *Details: NSS Dependency*.
 
 Now you can run a performance test as follows:
-```
+```shell
 # sanity check that all client and server implementations work within one library
 cargo test -p nesquic --features quinn
 cargo test -p nesquic --features quiche
@@ -50,7 +50,7 @@ cargo test -p nesquic --features noq
 # start the metric collection services (InfluxDB and grafana)
 docker compose -f docker/backend.yml up -d
 # set up the dashboards
-export NQ_LIBS="quinn quiche neqo"
+export NQ_LIBS="quinn quiche neqo noq msquic"
 script/dashboard.sh
 # update run.sh to the correct CPU-range; if you are running a bare-metal
 # benchmark, enable NESQUIC_BENACHMARK=1.
@@ -79,6 +79,23 @@ To reset the Grafana dashboard, simply remove the `nesquic_grafana_data` volume:
 docker compose -f docker/backend.yml down
 docker volume rm nesquic_grafana_data
 ```
+
+## QLOG
+
+QLOG is a standardized logging format for QUIC-libraries. We use it to enable the collection of metrics only visible from the inside. 
+
+QLOG-collection deteriorates performance, thus, it is only enabled when `QLOG_DIR` is set to a folder.
+
+The QLOG-RFC is not finalized yet, and there are multiple common versions used today. 
+
+We were able to 
+
+| library | QLOG-Version | QLOG-QUIC-Events-Version  |
+|---------|--------------|---------------------------|
+| neqo   | `qlog_version=0.3`                                      | N/A                                                 |
+| quiche | N/A, `file_schema=urn:ietf:params:qlog:file:sequential` | `event_schemas=urn:ietf:params:qlog:events:quic-12` |
+| quinn  | `qlog_version=0.3`                                      | N/A                                                 |
+| noq    | N/A, `file_schema=urn:ietf:params:qlog:file:sequential` | ?                                                   |
 
 ## Details: NSS Dependency
 
@@ -125,3 +142,4 @@ certutil -L -d nssdb
 certutil -M -t "TC,C,C" -n nesquic -d nssdb
 certutil -L -d nssdb
 ```
+

@@ -47,9 +47,9 @@ services:
             - ./grafana/dashboard:/var/lib/grafana/dashboards:ro
         environment:
             - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER:-admin}
-            - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-admin}
+            - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-8nB5OYV1VGV4zy7VqlO3p88c}
             - GF_AUTH_ANONYMOUS_ENABLED=true
             - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
             - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
-            - GF_AUTH_DISABLE_LOGIN_FORM=true
+            - GF_AUTH_DISABLE_LOGIN_FORM=false
             - GF_USERS_ALLOW_SIGN_UP=false
